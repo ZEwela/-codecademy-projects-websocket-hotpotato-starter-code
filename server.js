@@ -65,6 +65,14 @@ wsServer.on('connection', (socket) => {
 ///////////////////////////////////////////////
 
 // TODO: Implement the broadcast pattern
+const broadcast = (data, socketToOmit) => {
+  wsServer.clients.forEach(connectedClient => {
+    if (connectedClient.readyState === WebSocket.OPEN &&
+        connectedClient !== socketToOmit) {
+      connectedClient.send(JSON.stringify(data));
+    }
+  })
+}
 
 
 function handleNewUser(socket) {
