@@ -7,6 +7,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const WebSocket = require('ws');
+const { type } = require('os');
 
 // Constants
 const { PORT, MAX_TIME, CLIENT, SERVER } = CONSTANTS;
@@ -46,9 +47,16 @@ const wsServer = new WebSocket.Server({server: server});
   // 'NEW_USER' => handleNewUser(socket)
   // 'PASS_POTATO' => passThePotatoTo(newPotatoHolderIndex)
 wsServer.on('connection', (socket) => {
-  console.log('A new client has joined the server');
   socket.on('message', (data) => {
-
+    const message = JSON.parse(data);
+    const { type, payload } = message;
+    switch(type) {
+      case CLIENT.MESSAGE.NEW_USER:
+        handleNewUser(socket);
+        break;
+      default:
+        break;
+    }
   })
 })
 
@@ -63,7 +71,11 @@ function handleNewUser(socket) {
   // Until there are 4 players in the game....
   if (nextPlayerIndex < 4) {
     // TODO: Send PLAYER_ASSIGNMENT to the socket with a clientPlayerIndex
-    
+    const playerAssignmentMessage = JSON.stringify({
+      type: SERVER.MESSAGE.PLAYER_ASSIGNMENT,
+      payload: { clientPlayerIndex: nextPlayerIndex }
+    })
+    socket.send(playerAssignmentMessage);
     
     // Then, increment the number of players in the game
     nextPlayerIndex++;
@@ -82,8 +94,11 @@ function handleNewUser(socket) {
   // If 4 players are already in the game...
   else {
     // TODO: Send GAME_FULL to the socket
-    
-
+    const gameFullMessage = JSON.stringify({
+      type: SERVER.MESSAGE.GAME_FULL,
+      payload: {}
+    });
+    socket.send(gameFullMessage);
   }
 }
 
