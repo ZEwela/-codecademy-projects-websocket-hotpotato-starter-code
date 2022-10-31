@@ -93,6 +93,10 @@
             let playerIndex = payload.clientPlayerIndex;
             setPlayerIndex(playerIndex);            
             break;
+          case SERVER.BROADCAST.NEW_POTATO_HOLDER:
+            let newPotatoHolder = payload.newPotatoHolderIndex;
+            updateCurrentPotatoHolder(newPotatoHolder);            
+            break;
           default:
             break;
         }
@@ -117,9 +121,13 @@
     function passThePotatoTo(newPotatoHolderIndex) { 
       // set the potatoHolderIndex to be the player that was clicked on
       potatoHolderIndex = newPotatoHolderIndex;
-      
+      updateCurrentPotatoHolder(potatoHolderIndex);
       // TODO: Send the server a 'PASS_POTATO' message with the newPotatoHolderIndex
-      
+      const passPotatoMessage = {
+        type: CLIENT.MESSAGE.PASS_POTATO,
+        payload: {newPotatoHolderIndex: potatoHolderIndex}
+      }
+      wsClient.send(JSON.stringify(passPotatoMessage))
     }
 
     ////////////////////////////////////////////////

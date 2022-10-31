@@ -54,6 +54,9 @@ wsServer.on('connection', (socket) => {
       case CLIENT.MESSAGE.NEW_USER:
         handleNewUser(socket);
         break;
+      case CLIENT.MESSAGE.PASS_POTATO:
+        passThePotatoTo(payload.newPotatoHolderIndex);
+        break;
       default:
         break;
     }
@@ -66,7 +69,7 @@ wsServer.on('connection', (socket) => {
 
 // TODO: Implement the broadcast pattern
 const broadcast = (data, socketToOmit) => {
-  wsServer.clients.forEach(connectedClient => {
+  wsServer.clients.forEach((connectedClient) => {
     if (connectedClient.readyState === WebSocket.OPEN &&
         connectedClient !== socketToOmit) {
       connectedClient.send(JSON.stringify(data));
@@ -113,7 +116,11 @@ function handleNewUser(socket) {
  
 function passThePotatoTo(newPotatoHolderIndex) {
   // TODO: Broadcast a NEW_POTATO_HOLDER message with the newPotatoHolderIndex
-  
+  const newPotatoHolderMessage = {
+    type: SERVER.BROADCAST.NEW_POTATO_HOLDER,
+    payload: {newPotatoHolderIndex: newPotatoHolderIndex}
+  }
+  broadcast(newPotatoHolderMessage);
 }
 
 function startTimer() {
