@@ -97,6 +97,13 @@
             let newPotatoHolder = payload.newPotatoHolderIndex;
             updateCurrentPotatoHolder(newPotatoHolder);            
             break;
+          case SERVER.BROADCAST.COUNTDOWN:
+            console.log('pppppppp');
+            countDown(payload.clockValue);            
+            break;
+          case SERVER.BROADCAST.GAME_OVER:
+            endGame();            
+            break;
           default:
             break;
         }
